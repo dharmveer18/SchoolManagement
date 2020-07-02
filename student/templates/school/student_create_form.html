@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{%block title %}
+    StudentInfo
+{%endblock%}
+
+{%block content %}
+
+<form method="POST" action="">
+    {% csrf_token %}
+    <a href="{% url 'school:logout' %}">Logout</a>
+   {{form.as_p}}
+
+    {{student_form.as_p}}
+    {{parent_form.as_p}}
+    {{address_form.as_p}}
+    <input type="submit" value="submit">
+</form>
+
+
+{%endblock%}

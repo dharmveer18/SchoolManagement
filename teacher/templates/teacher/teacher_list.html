@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{%block title %}
+{%endblock %}
+
+{% block content %}
+<h1>Teacher List</h1>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>EmpId</th>
+        <th>Designation</th>
+        <th>Salary</th>
+    </tr>
+    {% for object in object_list %}
+    <tr>
+        <td>{{ object }}</td>
+        <td><a href="{% url 'teacher:teacher_detail' object.emp_id %}">{{ object.emp_id }}</a></td>
+        <td>{{ object.designation }}</td>
+        <td>{{object.salary.basic_salary}}</td>
+        <td><a href="{% url 'teacher:teacher_update' object.emp_id %}">Update</a></td>
+        <td><a href="{% url 'teacher:teacher_delete' object.emp_id %}">Delete</a></td>
+    </tr>
+
+    {% empty %}
+    <li>No objects yet.</li>
+    {% endfor %}
+</table>
+
+<a href="{% url 'school:logout' %}">Logout</a>
+
+    <hr/>
+
+{%endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{%block title %}
+    StudentList
+{%endblock %}
+
+{% block content %}
+    <h1>StudentList</h1>
+
+    <table>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                ClassName
+            </th>
+            <th>
+                RollNo
+            </th>
+        </tr>
+        {% for student in students %}
+        <td><a href="{% url 'student:student_detail' student.id %}" >{{ student }}</a></td>
+            <td> {{student.class_name}}</td>
+            <td> {{student.roll_no}}</td>
+            <td><a href="{% url 'student:student_update' student.roll_no %}" >Update</a></td>
+            <td><a href="{% url 'student:student_delete' student.personal_details.id %}" >Delete</a></td>
+
+        {% empty %}
+            <li>No objects yet.</li>
+        {% endfor %}
+
+    </table>
+
+    <a href="{% url 'school:logout' %}">Logout</a>
+
+    <hr/>
+
+{%endblock %}

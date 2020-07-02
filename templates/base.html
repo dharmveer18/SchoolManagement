@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>
+        {% block title %}
+        {% endblock %}
+    </title>
+    <style>
+            table, th, td {
+                width: 50%;
+                background-color: #f1f1c1;
+                border: 1px solid black;
+                border-collapse: collapse;
+                margin: 0 100px;
+        }
+        th, td {
+            padding: 15px;
+        }
+        th{
+        background-color: #eee;
+        }
+        {% block style %}
+
+        {% endblock %}
+
+    </style>
+
+    <script>
+            {% block script%}
+            {%endblock%}
+    </script>
+</head>
+
+<body>
+    {% block content %}
+
+    {% endblock %}
+
+
+
+</body>
+</html>

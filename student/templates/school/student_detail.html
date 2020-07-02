@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{%block title %}
+    StudentList
+{%endblock %}
+
+{% block content %}
+    <h1>{{student}}</h1>
+
+    <table>
+        <tr>
+            <th>Student Name</th>
+            <th>Roll No</th>
+        </tr>
+        <tr>
+             <td> {{student.class_name}}</td>
+            <td> {{student.roll_no}}</td>
+        </tr>
+    </table>
+
+    <a href="{% url 'school:logout' %}">Logout</a>
+
+    <hr/>
+
+{%endblock %}

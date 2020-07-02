@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{%block title %}
+{%endblock %}
+
+{% block content %}
+<h1>{{object}}</h1>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>EmpId</th>
+        <th>Designation</th>
+        <th>Salary</th>
+    </tr>
+
+    <tr>
+        <td>{{ object }}</td>
+        <td>{{ object.teacher.emp_id }}</td>
+        <td>{{ object.teacher.designation }}</td>
+        <td>{{object.teacher.salary__basic_salary}}</td>
+    </tr>
+
+</table>
+
+<a href="{% url 'school:logout' %}">Logout</a>
+
+    <hr/>
+
+{%endblock %}

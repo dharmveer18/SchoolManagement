@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{%block title %}
+{%endblock %}
+
+{% block content %}
+<h1>Welcome Admin</h1>
+
+<a href="{% url 'teacher:teacher_create' %}">Create Teacher</a>
+<br>
+<a href="{% url 'student:student_create' %}">Create Student</a>
+<br>
+<br>
+<a href="{% url 'school:logout' %}">Logout</a>
+
+
+{%endblock %}
