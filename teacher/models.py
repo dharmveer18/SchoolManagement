@@ -2,17 +2,6 @@ from django.db import models
 
 from school.models import CustomUser
 
-
-class Teacher(models.Model):
-    personal_details = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    designation = models.CharField(max_length=20)
-    joining_date = models.DateField()
-    emp_id = models.CharField(max_length=8, unique=True)
-
-    def __str__(self):
-        return self.personal_details.username
-
-
 class Salary(models.Model):
     basic_salary = models.FloatField()
     hra = models.FloatField(null = True, blank=True)
@@ -20,7 +9,20 @@ class Salary(models.Model):
     da = models.FloatField(null = True, blank=True)
     other_allowances = models.FloatField(null = True, blank=True)
     net_salary = models.FloatField()
-    teacher_id = models.OneToOneField(Teacher, on_delete=models.CASCADE)
+
+class Teacher(models.Model):
+    personal_details = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    designation = models.CharField(max_length=20)
+    joining_date = models.DateField()
+    emp_id = models.CharField(max_length=8, unique=True)
+    salary = models.OneToOneField(Salary, null=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return self.personal_details.username
+
+
+
+
 
 
 # class Subject(models.Model):

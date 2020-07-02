@@ -28,10 +28,13 @@ class TeacherDeleteView(LoginRequiredMixin, DeleteView):
     model = CustomUser
     template_name = 'school/customuser_confirm_delete.html'
     success_url = reverse_lazy('teacher:teacher_list')
+    query_pk_and_slug = 'emp_id'
+    pk_url_kwarg = 'emp_id'
+    #slug_url_kwarg = 'emp_id'
 
     def delete(self, request, *args, **kwargs):
         try:
-            user = self.model.get.object.filter(teacher__emp_id = kwargs.get('emp_id')).first()
+            user = self.model.get.object.filter(teacher__emp_id = self.kwargs.get('emp_id')).first()
             user.is_user_deleted = True
             user.save()
 
@@ -39,6 +42,7 @@ class TeacherDeleteView(LoginRequiredMixin, DeleteView):
         except:
             return HttpResponse('<h1>Teacher Not Found</h1>')
         return HttpResponse('<h1>Teacher Not Found</h1>')
+
 
 class TeacherUpdateView(LoginRequiredMixin, UpdateView):
     model = CustomUser
@@ -55,8 +59,9 @@ class TeacherUpdateView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['address_form'] = AddressForm(instance= self.object.address_set.all().first())
+
         context['teacher_form'] = TeacherForm(instance=self.object.teacher)
-        #context['salary_form'] = SalaryForm(instance= self.object.teacher.salary_set.all().first())
+        context['salary_form'] = SalaryForm(instance= self.object.teacher.salary)
 
         return context
 
