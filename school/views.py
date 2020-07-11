@@ -18,14 +18,16 @@ class RegisterUser(CreateView):
 
     success_url = reverse_lazy('school:register')
 
+
 class CustomLoginView(LoginView):
+
     def home(self):
         user = self.request.user
         if user.type_of_user == 't':
             return HttpResponseRedirect(reverse('teacher:teacher_home'))
         elif user.type_of_user == 's':
             return HttpResponseRedirect(reverse('student:student_home'))
-        else :
+        else:
             return HttpResponseRedirect(reverse('school:admin_home'))
 
     def form_valid(self, form):
@@ -53,13 +55,13 @@ class CustomLoginView(LoginView):
 
 
 class AdminHome(LoginRequiredMixin, View):
+
     def get(self, request, *args, **kwargs):
         return render(request, 'school/admin_home.html')
 
 
+class AttendenceView(LoginRequiredMixin, View):
 
-
-
-
-
+    def get(self, request, *args, **kwargs):
+        return render(request, 'school/attendance.html')
 

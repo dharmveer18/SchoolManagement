@@ -1,6 +1,19 @@
+from datetime import datetime
+
 from django.db import models
 
 from school.models import CustomUser
+
+
+LEAVE_REASON = (
+    ('s', 'Sick Leave'),
+)
+ATTENDANCE_STATUS = (
+    ('P', 'present'),
+    ('A', 'absent'),
+    ('L', 'leave'),
+    ('H', 'Half-day')
+)
 
 
 class Address(models.Model):
@@ -22,7 +35,14 @@ class ClassName(models.Model):
     def __str__(self):
         return self.class_name
 
+class Leaves(models.Model):
+    cosumed_leaves = models.PositiveIntegerField()
+    allocated_leaves = models.PositiveIntegerField()
 
 
+class Attendance(models.Model):
+
+    status = models.CharField(max_length=1, choices=ATTENDANCE_STATUS, default='A')
+    reason = models.CharField(max_length=1, choices=LEAVE_REASON)
 
 

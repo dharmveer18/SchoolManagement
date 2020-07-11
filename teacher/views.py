@@ -23,6 +23,9 @@ class TeacherListView(LoginRequiredMixin, ListView):
     template_name = 'teacher/teacher_list.html'
     success_url = 'teacher:teacher_list'
 
+    def get_queryset(self):
+        return super().get_queryset().filter(personal_details__is_user_deleted= False)
+
 
 class TeacherDeleteView(LoginRequiredMixin, DeleteView):
     model = CustomUser
@@ -30,18 +33,22 @@ class TeacherDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('teacher:teacher_list')
     query_pk_and_slug = 'emp_id'
     pk_url_kwarg = 'emp_id'
-    #slug_url_kwarg = 'emp_id'
+
+    # slug_url_kwarg = 'emp_id'
+
+    def get_object(self, queryset=None):
+        teacher_instance = self.model.objects.filter(teacher__emp_id=self.kwargs.get('emp_id')).first()
+        return teacher_instance
 
     def delete(self, request, *args, **kwargs):
         try:
-            user = self.model.get.object.filter(teacher__emp_id = self.kwargs.get('emp_id')).first()
+            user = self.get_object()
             user.is_user_deleted = True
             user.save()
-
+            # delete database with related items
             return HttpResponseRedirect(self.success_url)
         except:
             return HttpResponse('<h1>Teacher Not Found</h1>')
-        return HttpResponse('<h1>Teacher Not Found</h1>')
 
 
 class TeacherUpdateView(LoginRequiredMixin, UpdateView):
@@ -53,17 +60,36 @@ class TeacherUpdateView(LoginRequiredMixin, UpdateView):
     pk_url_kwarg = 'emp_id'
 
     def get_object(self, queryset=None):
-        teacher_instance = self.model.objects.filter(teacher__emp_id = self.kwargs.get('emp_id')).first()
+        teacher_instance = self.model.objects.filter(teacher__emp_id=self.kwargs.get('emp_id')).first()
         return teacher_instance
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['address_form'] = AddressForm(instance= self.object.address_set.all().first())
+        context['address_form'] = AddressForm(instance=self.object.address_set.all().first())
 
         context['teacher_form'] = TeacherForm(instance=self.object.teacher)
-        context['salary_form'] = SalaryForm(instance= self.object.teacher.salary)
+        context['salary_form'] = SalaryForm(instance=self.object.teacher.salary)
 
         return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+
+        address_form = AddressForm(self.request.POST, instance=self.object.address_set.all().first())
+        salary_form = SalaryForm(self.request.POST, instance=self.object.teacher.salary)
+        teacher_form = TeacherForm(self.request.POST, self.request.FILES, instance=self.object.teacher)
+
+        if form.is_valid() and address_form.is_valid() and teacher_form.is_valid():
+
+            form.save()
+            address_form.save()
+            teacher_form.save()
+            salary_form.save()
+
+            return super().form_valid(form)
+        else:
+            return render(self.request, template_name=self.template_name,
+                          context={'address_form': address_form, 'teacher_form': teacher_form, 'form': form})
 
 
 class TeacherDetailView(LoginRequiredMixin, DetailView):
@@ -74,7 +100,7 @@ class TeacherDetailView(LoginRequiredMixin, DetailView):
     pk_url_kwarg = 'emp_id'
 
     def get_object(self, queryset=None):
-        teacher_detail = self.model.objects.filter(teacher__emp_id = self.kwargs.get('emp_id')).first()
+        teacher_detail = self.model.objects.filter(teacher__emp_id=self.kwargs.get('emp_id')).first()
         return teacher_detail
 
 
@@ -117,7 +143,5 @@ class TeacherCreateView(CreateView):
             return super().form_valid(form)
 
         else:
-            return render(self.request, template_name= self.template_name,
-                          context= {'address_form': address_form, 'teacher_form': teacher_form, 'form':form})
-
-
+            return render(self.request, template_name=self.template_name,
+                          context={'address_form': address_form, 'teacher_form': teacher_form, 'form': form})

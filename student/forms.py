@@ -17,6 +17,10 @@ class ParentForm(forms.ModelForm):
         fields = ['name', 'contact_no']
 
 
+class StudentAttendanceForm(forms.Form):
+        student = forms.TextInput()# widget make choice and selection
+        attendance = forms.ChoiceField()# add choices
+
 
 
 

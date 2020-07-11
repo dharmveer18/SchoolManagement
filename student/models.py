@@ -1,6 +1,8 @@
+from datetime import datetime
+
 from django.db import models
 
-from school.common_models import ClassName
+from school.common_models import ClassName, Attendance
 from school.models import CustomUser
 
 
@@ -17,3 +19,10 @@ class Student(models.Model):
 
     def __str__(self):
         return self.personal_details.username
+
+
+class StudentAttendance(models.Model):
+    attendance = models.ForeignKey(Attendance, null=True, on_delete= models.SET_NULL)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    #class_name = models.ForeignKey(ClassName, on_delete=models.CASCADE)
+    date = models.DateTimeField(default=datetime.now().date(), blank=True, )

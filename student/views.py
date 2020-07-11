@@ -6,19 +6,37 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, DeleteView, UpdateView, DetailView
 
-from school.forms import RegistrationForm, AddressForm
+from school.common_models import ClassName
+from school.forms import RegistrationForm, AddressForm, AttendenceForm
 from school.models import CustomUser, USER_TYPE_CHOICE
-from student.forms import ParentForm, StudentForm
-from student.models import Student
+from student.forms import ParentForm, StudentForm, StudentAttendanceForm
+from student.models import Student, StudentAttendance
 
+
+class StudentAttendance(CreateView):
+    form_class = StudentAttendanceForm
+    model = StudentAttendance
+    template_name = 'school/attendance.html'
+    success_url = 'school:attendance'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(self, **kwargs)
+
+        #student = Student.objects.filter(class_name = self.)
+        context['attendance_form'] = AttendenceForm()
+
+        return context
+
+    def form_valid(self, form):
+        attendance_form = AttendenceForm(self.request.POST)
+
+        if form.is_valid() and attendance_form.is_valid():
+            form.save()
 
 class StudentHome(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         return render(request, 'student/student_home.html')
-
-
-#use list and detail view
 
 
 class StudentListView(LoginRequiredMixin, View):
@@ -28,8 +46,8 @@ class StudentListView(LoginRequiredMixin, View):
             try:
                 student = Student.objects.filter(id=kwargs.get('id')).first()
                 return render(request, 'school/student_detail.html', {'student': student})
-            except:
-                return HttpResponse('<h1>Student Not Found</h1>')
+            except Exception as e:
+                return HttpResponse('<h1>Student Not Found{{e.message}}</h1>')
 
         else:
             students = Student.objects.filter(personal_details__is_user_deleted= False)
@@ -93,14 +111,15 @@ class StudentCreateView(CreateView):
 
         return context
 
-    def form_valid(self, form):
-        context = self.get_context_data()
+    def is_valid(self, form):
+        return form.is_valid()
 
+    def form_valid(self, form):
         address_form = AddressForm(self.request.POST)
         student_form = StudentForm(self.request.POST, self.request.FILES)
         parent_form = ParentForm(self.request.POST)
 
-        if form.is_valid() and address_form.is_valid() and student_form.is_valid() and parent_form.is_valid():
+        if all([self.is_valid(f) for f in [address_form, student_form, parent_form, form]]):
             form.instance.password = str(uuid4())
             form.instance.type_of_user = USER_TYPE_CHOICE[0][0]
 
