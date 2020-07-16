@@ -1,37 +1,62 @@
 from uuid import uuid4
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.forms import formset_factory
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, DeleteView, UpdateView, DetailView
 
-from school.common_models import ClassName
-from school.forms import RegistrationForm, AddressForm, AttendenceForm
+from school.common_models import ClassName, ATTENDANCE_STATUS, Attendance
+from school.forms import RegistrationForm, AddressForm
 from school.models import CustomUser, USER_TYPE_CHOICE
-from student.forms import ParentForm, StudentForm, StudentAttendanceForm
+from student.forms import ParentForm, StudentForm, StudentAttendanceForm, StudentAttendanceBaseFormSet
 from student.models import Student, StudentAttendance
 
 
-class StudentAttendance(CreateView):
-    form_class = StudentAttendanceForm
-    model = StudentAttendance
-    template_name = 'school/attendance.html'
-    success_url = 'school:attendance'
+class StudentAttendanceView(View):
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(self, **kwargs)
+    def get(self, request, *args, **kwargs):
+        classes = ClassName.objects.all()
 
-        #student = Student.objects.filter(class_name = self.)
-        context['attendance_form'] = AttendenceForm()
+        return render(request, 'school/attendance.html', context={'classes': classes})
 
-        return context
+    def handle_classform(self):
+        class_id = self.request.POST.get('class_name')
+        class_name = ClassName.objects.filter(id=class_id).first()
 
-    def form_valid(self, form):
-        attendance_form = AttendenceForm(self.request.POST)
+        if class_name:
+            students = Student.objects.filter(class_name=class_name)
+            StudentFormSet = formset_factory(form=StudentAttendanceForm, formset=StudentAttendanceBaseFormSet, extra=0)
 
-        if form.is_valid() and attendance_form.is_valid():
-            form.save()
+            formset = StudentFormSet(initial=[{'student_name': student.personal_details.first_name,
+                                               'roll_no': student.roll_no} for student in students],
+                                     prefix='student_attend', form_kwargs={'class_name': class_name})
+
+            return formset
+        else:
+            pass
+            # return render(self.request, 'school/attendance.html', context={'error': 'Please provide valid class'})
+
+    def post(self, request, *args, **kwargs):
+
+        if 'class_form' in request.POST:
+            formset = self.handle_classform()
+
+        else:
+            # customise using handle_classform
+            class_name = request.POST.get('student_attend-0-class_name')
+            class_name = ClassName.objects.filter(id=class_name).first()
+            StudentFormSet = formset_factory(form=StudentAttendanceForm, formset=StudentAttendanceBaseFormSet, extra=0)
+            formset = StudentFormSet(request.POST, prefix='student_attend',
+                                     form_kwargs={'class_name': class_name})
+
+            if formset.is_valid():
+                for form in formset:
+                    form.save()
+
+        return render(request, 'school/attendance.html', {'forms': formset})
+
 
 class StudentHome(LoginRequiredMixin, View):
 
@@ -50,7 +75,7 @@ class StudentListView(LoginRequiredMixin, View):
                 return HttpResponse('<h1>Student Not Found{{e.message}}</h1>')
 
         else:
-            students = Student.objects.filter(personal_details__is_user_deleted= False)
+            students = Student.objects.filter(personal_details__is_user_deleted=False)
             return render(request, 'school/student_list.html', {'students': students})
 
 
@@ -62,16 +87,15 @@ class StudentUpdateView(UpdateView):
     pk_url_kwarg = 'roll_no'
 
     def get_object(self, queryset=None):
-        custom_user = self.model.objects.filter(student__roll_no = self.kwargs.get('roll_no')).first()
+        custom_user = self.model.objects.filter(student__roll_no=self.kwargs.get('roll_no')).first()
         return custom_user
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['address_form'] = AddressForm(instance= self.object.address_set.all().first())
-        context['student_form'] = StudentForm(instance= self.object.student)
-        context['parent_form'] = ParentForm(instance= self.object.student.parent_details)
+        context['address_form'] = AddressForm(instance=self.object.address_set.all().first())
+        context['student_form'] = StudentForm(instance=self.object.student)
+        context['parent_form'] = ParentForm(instance=self.object.student.parent_details)
         return context
-
 
     def get_success_url(self):
         # return reverse('student:student_detail', kwargs='self.object.id')
@@ -135,9 +159,9 @@ class StudentCreateView(CreateView):
 
             return super().form_valid(form)
         else:
-            return render(self.request, template_name= self.template_name,
-                          context= {'address_form': address_form, 'parent_form': parent_form,
-                                    'student_form': student_form, 'form':form})
+            return render(self.request, template_name=self.template_name,
+                          context={'address_form': address_form, 'parent_form': parent_form,
+                                   'student_form': student_form, 'form': form})
 
     # handle invalid scenarios form.errors
 

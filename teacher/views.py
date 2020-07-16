@@ -1,5 +1,6 @@
 from uuid import uuid4
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.forms import formset_factory
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
@@ -8,8 +9,33 @@ from django.views.generic import CreateView, ListView, DetailView, UpdateView, D
 
 from school.forms import RegistrationForm, AddressForm
 from school.models import CustomUser, USER_TYPE_CHOICE
-from teacher.forms import TeacherForm, SalaryForm
+from teacher.forms import TeacherForm, SalaryForm, TeacherAttendanceForm, TeacherAttendanceBaseFormset
 from teacher.models import Teacher
+
+
+class TeacherAttendanceView(View):
+
+    def create_teacher_attend_formset(self):
+        return formset_factory(TeacherAttendanceForm, formset=TeacherAttendanceBaseFormset, extra=0)
+
+    def get(self, request, *args, **kwargs):
+        teacher_attendance_formset = self.create_teacher_attend_formset()
+
+        formset = teacher_attendance_formset(
+            initial=[{'teacher_name': teacher.personal_details.first_name, 'emp_id': teacher.emp_id}
+                     for teacher in Teacher.objects.all()], prefix='teacher_attend')
+        return render(request, 'teacher/teacher_attendance.html', context={'formset': formset})
+
+    def post(self, request, *args, **kwargs):
+        teacher_attendance_formset = self.create_teacher_attend_formset()
+
+        formset = teacher_attendance_formset(request.POST, prefix='teacher_attend')
+
+        if formset.is_valid():
+            for form in formset:
+                form.save()
+
+        return render(request, 'teacher/teacher_attendance.html', context={'formset': formset})
 
 
 class TeacherHome(LoginRequiredMixin, View):
@@ -24,7 +50,7 @@ class TeacherListView(LoginRequiredMixin, ListView):
     success_url = 'teacher:teacher_list'
 
     def get_queryset(self):
-        return super().get_queryset().filter(personal_details__is_user_deleted= False)
+        return super().get_queryset().filter(personal_details__is_user_deleted=False)
 
 
 class TeacherDeleteView(LoginRequiredMixin, DeleteView):

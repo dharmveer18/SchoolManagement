@@ -14,14 +14,8 @@
 {% if user.type_of_user == 't' %}
 <a href="{% url 'school:attendence' %}">Add Attendence</a>
 {% endif %}
-<br>s
 <br>
 <br>
-<a href="{% url 'school:logout' %}">Logout</a>
-{% if user.is_autheticated %}
-<a href="{% url 'school:logout' %}">Logout</a>
-{%else%}
-<a href="{% url 'school:login' %}">Login</a>
-{%endif%}
+
 
 {%endblock %}

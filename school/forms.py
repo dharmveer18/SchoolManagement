@@ -1,6 +1,6 @@
 from django import forms
 
-from school.common_models import Address, Attendance
+from school.common_models import Address, Attendance, ClassName
 from school.models import CustomUser
 
 
@@ -28,7 +28,8 @@ class AddressForm(forms.ModelForm):
         exclude = ['user',]
 
 
-class AttendenceForm(forms.ModelForm):
+class AttendanceForm(forms.ModelForm):
     class Meta:
         model = Attendance
         fields = '__all__'
+

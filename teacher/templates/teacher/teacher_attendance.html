@@ -1,0 +1,22 @@
+{%block title %}
+{%endblock %}
+
+{% block content %}
+
+<form method="POST">
+    {% csrf_token %}
+    <label for="teacher_attend_date">Date</label>
+    <input type="date" id="teacher_attend_date" name="teacher_attend_date">
+    <br><br>
+    {{ formset.non_form_errors }}
+    {{formset.management_form }}
+
+    {%for form in formset%}
+        {{form.as_table}}
+        <br>
+    {%endfor%}
+
+    <input type="submit" value="submit">
+</form>
+
+{%endblock %}

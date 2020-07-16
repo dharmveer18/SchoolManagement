@@ -6,9 +6,43 @@ Attendance
 {% block content %}
 <h1>Attendance</h1>
 
+<form method="POST" >
+    {%csrf_token%}
 
-<br>
-<a href="{% url 'school:logout' %}">Logout</a>
+    <input type="hidden" name="class_form">
+    <select name="class_name" >
+
+        <option value="">-----</option>
+
+        {% for class in classes %}
+            <option value='{{class.id}}'>{{class.class_name}}</option>
+        {%endfor%}
+
+    </select>
+
+    <input type="submit" value="submit">
+</form>
+
+
+<form method="POST">
+    {%csrf_token%}
+
+    <label for="student_attend_date">Date</label>
+    <input type="date" id="student_attend_date" name="student_attend_date">
+{{ forms.non_form_errors }}
+    <br><br>
+
+    {{forms.management_form }}
+        {% for form in forms%}
+
+            {{form.as_table}}
+            <br>
+        {%endfor%}
+    <input type="submit" value="submit">
+
+</form>
+
+
 
 
 {%endblock %}

@@ -1,6 +1,10 @@
+from datetime import datetime
+
 from django.db import models
 
+from school.common_models import Attendance
 from school.models import CustomUser
+
 
 class Salary(models.Model):
     basic_salary = models.FloatField()
@@ -9,6 +13,7 @@ class Salary(models.Model):
     da = models.FloatField(null = True, blank=True)
     other_allowances = models.FloatField(null = True, blank=True)
     net_salary = models.FloatField()
+
 
 class Teacher(models.Model):
     personal_details = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
@@ -19,6 +24,12 @@ class Teacher(models.Model):
 
     def __str__(self):
         return self.personal_details.username
+
+
+class TeacherAttendance(models.Model):
+    attendance = models.ForeignKey(Attendance, on_delete=models.CASCADE)
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    date = models.DateField()
 
 
 

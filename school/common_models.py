@@ -6,7 +6,8 @@ from school.models import CustomUser
 
 
 LEAVE_REASON = (
-    ('s', 'Sick Leave'),
+    ('N', 'None'),
+    ('S', 'Sick Leave'),
 )
 ATTENDANCE_STATUS = (
     ('P', 'present'),
@@ -41,7 +42,6 @@ class Leaves(models.Model):
 
 
 class Attendance(models.Model):
-
     status = models.CharField(max_length=1, choices=ATTENDANCE_STATUS, default='A')
     reason = models.CharField(max_length=1, choices=LEAVE_REASON)
 

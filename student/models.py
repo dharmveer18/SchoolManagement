@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 
 from django.db import models
 
@@ -24,5 +24,5 @@ class Student(models.Model):
 class StudentAttendance(models.Model):
     attendance = models.ForeignKey(Attendance, null=True, on_delete= models.SET_NULL)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    #class_name = models.ForeignKey(ClassName, on_delete=models.CASCADE)
-    date = models.DateTimeField(default=datetime.now().date(), blank=True, )
+    class_name = models.ForeignKey(ClassName, on_delete=models.CASCADE)
+    date = models.DateTimeField(default=date.today(), blank=True, )

@@ -17,12 +17,13 @@ from django.contrib import admin
 from django.urls import path
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth import *
-from school.views import CustomLoginView, RegisterUser, AdminHome, AttendenceView
+from school.views import CustomLoginView, RegisterUser, AdminHome
+from student.views import StudentAttendanceView
 
 urlpatterns = [
     path('login/', CustomLoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('', AdminHome.as_view(), name='admin_home'),
     path('register/', RegisterUser.as_view(), name='register'),
-    path('attendence/', AttendenceView.as_view(), name='attendence')
+    path('attendance/', StudentAttendanceView.as_view(), name='attendance')
 ]
