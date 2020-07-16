@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crispy_forms',
     'school',
     'student',
     'teacher'
@@ -119,3 +120,6 @@ STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'school.CustomUser'
 LOGIN_REDIRECT_URL = ''
 LOGOUT_REDIRECT_URL = 'school:login'
+LOGIN_URL = "/login/"
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

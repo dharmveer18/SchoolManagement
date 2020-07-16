@@ -1,21 +1,27 @@
-{% extends 'base.html' %}
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
 
 {%block title %}
-    StudentInfo
+StudentInfo
 {%endblock%}
 
 {%block content %}
+<div class="container text-left">
+        <h2>Add Teacher</h2>
+        <form method="POST" action="" class="row">
+            {% csrf_token %}
+            <div class="col-sm-6">
+                {{form|crispy}}
+                {{teacher_form|crispy}}
+            </div>
+            <div class="col-sm-6">
 
-<form method="POST" action="">
-    {% csrf_token %}
-    <a href="{% url 'school:logout' %}">Logout</a>
-   {{form.as_p}}
-
-    {{teacher_form.as_p}}
-    {{address_form.as_p}}
-    {{salary_form.as_p}}
-    <input type="submit" value="submit">
-</form>
-
+                {{address_form|crispy}}
+                {{salary_form|crispy}}
+            </div>
+            <button class="btn btn-default" type="submit">Submit</button>
+        </form>
+    </div>
+</div>
 
 {%endblock%}

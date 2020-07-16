@@ -155,9 +155,8 @@ class TeacherCreateView(CreateView):
         teacher_form = TeacherForm(self.request.POST, self.request.FILES)
 
         if form.is_valid() and address_form.is_valid() and teacher_form.is_valid():
-            form.instance.password = str(uuid4())
             form.instance.type_of_user = USER_TYPE_CHOICE[1][0]
-
+            form.instance.set_password(form.instance.username + "@123")
             form.save()
             address_form.instance.user = form.instance
             address_form.save()

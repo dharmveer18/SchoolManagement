@@ -1,21 +1,10 @@
-{% extends 'base.html' %}
+{% extends 'base/base.html' %}
 {%block title %}
+    Admin Dashboard
 {%endblock %}
 
 {% block content %}
-<h1>Welcome Admin</h1>
-{% if user.type_of_user == 'a' %}
-<a href="{% url 'teacher:teacher_create' %}">Create Teacher</a>
-<br>
-<a href="{% url 'student:student_create' %}">Create Student</a>
-<br>
-<br>
-{% endif %}
-{% if user.type_of_user == 't' %}
-<a href="{% url 'school:attendence' %}">Add Attendence</a>
-{% endif %}
-<br>
-<br>
-
-
+<div class="container">
+    <h1>Welcome Admin</h1>
+</div>
 {%endblock %}
